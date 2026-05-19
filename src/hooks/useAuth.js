@@ -1,5 +1,10 @@
 import { atom, useRecoilState, useRecoilValue } from "recoil";
-import { clearAccessToken, getAccessToken, setAccessToken } from "utils/token";
+import {
+  clearTokens,
+  getAccessToken,
+  getRefreshToken,
+  setTokens
+} from "utils/token";
 
 const authState = atom({
   key: "authState",
@@ -13,8 +18,8 @@ const authState = atom({
 export function useAuth() {
   const [auth, setAuth] = useRecoilState(authState);
 
-  const login = (token, user) => {
-    setAccessToken(token);
+  const login = (accessToken, refreshToken, user) => {
+    setTokens(accessToken, refreshToken);
     setAuth({
       isAuthenticated: true,
       user,
@@ -23,7 +28,7 @@ export function useAuth() {
   };
 
   const logout = () => {
-    clearAccessToken();
+    clearTokens();
     setAuth({
       isAuthenticated: false,
       user: null,
@@ -40,7 +45,9 @@ export function useAuth() {
     });
   };
 
-  return { auth, login, logout, bootstrap };
+  const getStoredRefreshToken = () => getRefreshToken();
+
+  return { auth, login, logout, bootstrap, getStoredRefreshToken };
 }
 
 export function useAuthValue() {
