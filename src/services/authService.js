@@ -12,10 +12,14 @@ export async function fetchCurrentUser() {
 }
 
 export async function refreshAccessToken(refreshToken) {
-  const response = await httpClient.post("/auth/refresh", { refreshToken });
+  const response = await httpClient.post("/auth/refresh", null, {
+    params: { refreshToken },
+  });
   return response.data;
 }
 
 export async function logout(refreshToken) {
-  await httpClient.post("/auth/logout", { refreshToken });
+  await httpClient.post("/auth/logout", null, {
+    params: { refreshToken },
+  });
 }

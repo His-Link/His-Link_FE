@@ -29,23 +29,6 @@ a {
   flex-direction: column;
 }
 
-.app-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 56px;
-  padding: 0 24px;
-  background: var(--color-header-bg);
-  color: #ffffff;
-  box-shadow: 0 2px 12px rgba(93, 135, 255, 0.25);
-}
-
-.brand {
-  font-weight: 800;
-  font-size: 18px;
-  letter-spacing: -0.02em;
-}
-
 .app-header-actions {
   display: flex;
   align-items: center;
@@ -54,15 +37,14 @@ a {
 
 .app-header-user {
   font-size: 14px;
-  opacity: 0.95;
 }
 
 .header-btn {
   padding: 8px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(93, 135, 255, 0.35);
   border-radius: 8px;
   background: transparent;
-  color: #ffffff;
+  color: var(--color-primary);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -70,17 +52,7 @@ a {
 }
 
 .header-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.header-btn--solid {
-  border-color: #ffffff;
-  background: #ffffff;
-  color: var(--color-primary);
-}
-
-.header-btn--solid:hover {
-  background: #f0f4ff;
+  background: rgba(93, 135, 255, 0.08);
 }
 
 .app-main {
