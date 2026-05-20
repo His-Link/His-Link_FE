@@ -1,0 +1,267 @@
+const author = (id, name) => ({ id, name, profileImageUrl: null });
+
+/** 팀 모집 카드용 목 데이터 (대시보드·모집 페이지 공통) */
+export const MOCK_RECRUITMENT_POSTS_FULL = [
+  {
+    id: 201,
+    title: "캡스톤 백엔드 팀원 모집 (Spring + MySQL)",
+    description: "REST API 설계 경험 있으신 분 환영합니다. 주 2회 회의, GitHub Actions CI까지 같이 가요.",
+    recruitmentRole: "BACKEND",
+    status: "OPEN",
+    author: author(11, "강PM"),
+    currentCount: 2,
+    participantLimit: 4,
+    deadline: "2026-06-01T23:59:59",
+    createdAt: "2026-05-20T07:30:00",
+  },
+  {
+    id: 202,
+    title: "해커톤 프론트엔드 1명",
+    description: "React 18 + TypeScript, 반응형 위주. 48시간 해커톤 함께 달리실 분!",
+    recruitmentRole: "FRONTEND",
+    status: "OPEN",
+    author: author(12, "신리액트"),
+    currentCount: 1,
+    participantLimit: 2,
+    deadline: "2026-05-28T23:59:59",
+    createdAt: "2026-05-19T20:15:00",
+  },
+  {
+    id: 203,
+    title: "AI 추천 시스템 스터디 + 프로젝트",
+    description: "PyTorch 기초부터 추천 모델까지. 논문 스터디 후 미니 프로젝트 진행 예정.",
+    recruitmentRole: "AI_DATA",
+    status: "OPEN",
+    author: author(13, "문데이터"),
+    currentCount: 3,
+    participantLimit: 5,
+    deadline: "2026-06-15T23:59:59",
+    createdAt: "2026-05-18T12:00:00",
+  },
+  {
+    id: 204,
+    title: "모바일 앱 UI/UX 디자이너",
+    description: "Figma 시스템 구축 경험자 우대. HIS-Link 스타일 가이드 함께 잡아요.",
+    recruitmentRole: "DESIGN",
+    status: "OPEN",
+    author: author(14, "나디자인"),
+    currentCount: 0,
+    participantLimit: 2,
+    deadline: "2026-06-10T18:00:00",
+    createdAt: "2026-05-17T09:00:00",
+  },
+  {
+    id: 205,
+    title: "스타트업 PM 인턴 (3개월)",
+    description: "요구사항 정리·스프린트 운영 보조. Notion / Linear 사용 경험 있으면 좋아요.",
+    recruitmentRole: "PM",
+    status: "OPEN",
+    author: author(15, "배프로덕트"),
+    currentCount: 1,
+    participantLimit: 3,
+    deadline: "2026-05-25T23:59:59",
+    createdAt: "2026-05-16T14:20:00",
+  },
+  {
+    id: 206,
+    title: "오픈소스 문서화 기여자",
+    description: "영문 README·API 문서 보강. 개발 경력보다 글쓰기·번역에 관심 있으신 분.",
+    recruitmentRole: "OTHER",
+    status: "OPEN",
+    author: author(16, "유오픈"),
+    currentCount: 2,
+    participantLimit: 6,
+    deadline: "2026-07-01T23:59:59",
+    createdAt: "2026-05-15T11:00:00",
+  },
+  {
+    id: 207,
+    title: "졸업작품 풀스택 팀 (2자리)",
+    description: "Next.js + NestJS 풀스택. 배포는 Vercel + Railway 예정입니다.",
+    recruitmentRole: "FRONTEND",
+    status: "OPEN",
+    author: author(17, "임졸업"),
+    currentCount: 3,
+    participantLimit: 5,
+    deadline: "2026-06-20T23:59:59",
+    createdAt: "2026-05-14T16:40:00",
+  },
+  {
+    id: 208,
+    title: "게임잼 사운드 담당",
+    description: "2D 퍼즐 게임 BGM·효과음. Unity 팀과 협업, 1주일 집중 작업.",
+    recruitmentRole: "OTHER",
+    status: "CLOSED",
+    author: author(18, "조사운드"),
+    currentCount: 1,
+    participantLimit: 1,
+    deadline: "2026-05-10T23:59:59",
+    createdAt: "2026-05-01T10:00:00",
+  },
+];
+
+export const MOCK_DASHBOARD = {
+  latestCommunityPosts: [
+    {
+      id: 101,
+      category: "QNA",
+      title: "Spring Security 403 — JWT 필터 순서 질문",
+      contentPreview:
+        "OAuth 로그인 후 /api/auth/me 호출 시 403이 나는데, SecurityConfig에서 permitAll 경로를 어떻게…",
+      author: author(2, "김한동"),
+      viewCount: 42,
+      likeCount: 7,
+      commentCount: 3,
+      createdAt: "2026-05-20T09:12:00",
+    },
+    {
+      id: 102,
+      category: "INFO",
+      title: "한동 개발자 Meetup 5월 일정 공유",
+      contentPreview: "이번 주 금요일 7시 N4에서 스터디 합니다. React + Spring 세션…",
+      author: author(3, "이개발"),
+      viewCount: 128,
+      likeCount: 24,
+      commentCount: 11,
+      createdAt: "2026-05-19T18:30:00",
+    },
+    {
+      id: 103,
+      category: "TROUBLESHOOTING",
+      title: "MySQL HikariCP connection timeout 로컬에서만 발생",
+      contentPreview: "ddl-auto update 켜두면 가끔 풀이 고갈되는 것 같은데 같은 증상 있으신 분…",
+      author: author(4, "박서버"),
+      viewCount: 67,
+      likeCount: 5,
+      commentCount: 8,
+      createdAt: "2026-05-19T14:05:00",
+    },
+    {
+      id: 104,
+      category: "FREE",
+      title: "코딩 테스트 스터디 멤버 구합니다",
+      contentPreview: "백준/프로그래머스 주 2회 온라인, 백엔드 위주…",
+      author: author(5, "최코딩"),
+      viewCount: 31,
+      likeCount: 2,
+      commentCount: 4,
+      createdAt: "2026-05-18T21:00:00",
+    },
+  ],
+  latestProjects: [
+    {
+      id: 1,
+      title: "HIS-Link 모바일 프로토타입",
+      summary: "캠퍼스 커뮤니티 앱 와이어프레임 · 피드백 환영",
+      author: author(6, "정디자인"),
+      thumbnailUrl: null,
+      viewCount: 210,
+      likeCount: 18,
+      feedbackCount: 12,
+      avgOverallScore: 4.2,
+      createdAt: "2026-05-20T08:00:00",
+    },
+    {
+      id: 2,
+      title: "스마트 도서관 좌석 예약",
+      summary: "QR 체크인 · 실시간 좌석 맵",
+      author: author(7, "한프론트"),
+      thumbnailUrl: null,
+      viewCount: 95,
+      likeCount: 9,
+      feedbackCount: 4,
+      avgOverallScore: 3.8,
+      createdAt: "2026-05-19T11:20:00",
+    },
+    {
+      id: 3,
+      title: "AI 일정 비서 (베타)",
+      summary: "Google Calendar 연동 · 한국어 NLP",
+      author: author(8, "오AI"),
+      thumbnailUrl: null,
+      viewCount: 156,
+      likeCount: 22,
+      feedbackCount: 7,
+      avgOverallScore: 4.5,
+      createdAt: "2026-05-18T16:45:00",
+    },
+  ],
+  popularProjects: [
+    {
+      id: 4,
+      title: "캠퍼스 맛집 지도",
+      summary: "리뷰 · 영업시간 크롤링",
+      author: author(9, "윤풀스택"),
+      thumbnailUrl: null,
+      viewCount: 520,
+      likeCount: 89,
+      feedbackCount: 34,
+      avgOverallScore: 4.6,
+      createdAt: "2026-05-10T10:00:00",
+    },
+    {
+      id: 5,
+      title: "팀 매칭 플랫폼 MVP",
+      summary: "스택 태그 · 모집글 연동",
+      author: author(10, "서백엔드"),
+      thumbnailUrl: null,
+      viewCount: 380,
+      likeCount: 64,
+      feedbackCount: 21,
+      avgOverallScore: 4.1,
+      createdAt: "2026-05-08T09:30:00",
+    },
+  ],
+  topFeedbackProjects: [
+    {
+      id: 4,
+      title: "캠퍼스 맛집 지도",
+      summary: "리뷰 · 영업시간 크롤링",
+      author: author(9, "윤풀스택"),
+      thumbnailUrl: null,
+      viewCount: 520,
+      likeCount: 89,
+      feedbackCount: 34,
+      avgOverallScore: 4.6,
+      createdAt: "2026-05-10T10:00:00",
+    },
+    {
+      id: 1,
+      title: "HIS-Link 모바일 프로토타입",
+      summary: "캠퍼스 커뮤니티 앱 와이어프레임 · 피드백 환영",
+      author: author(6, "정디자인"),
+      thumbnailUrl: null,
+      viewCount: 210,
+      likeCount: 18,
+      feedbackCount: 12,
+      avgOverallScore: 4.2,
+      createdAt: "2026-05-20T08:00:00",
+    },
+  ],
+  latestRecruitmentPosts: MOCK_RECRUITMENT_POSTS_FULL.slice(0, 6),
+};
+
+function pickList(apiList, mockList) {
+  return apiList?.length ? apiList : mockList;
+}
+
+/** API 응답이 비어 있으면 목 데이터로 채움 (레이아웃 미리보기용) */
+export function mergeDashboardWithMock(api) {
+  if (!api) {
+    return { ...MOCK_DASHBOARD, _isMock: true };
+  }
+  const merged = {
+    latestCommunityPosts: pickList(api.latestCommunityPosts, MOCK_DASHBOARD.latestCommunityPosts),
+    latestProjects: pickList(api.latestProjects, MOCK_DASHBOARD.latestProjects),
+    popularProjects: pickList(api.popularProjects, MOCK_DASHBOARD.popularProjects),
+    topFeedbackProjects: pickList(api.topFeedbackProjects, MOCK_DASHBOARD.topFeedbackProjects),
+    latestRecruitmentPosts: pickList(api.latestRecruitmentPosts, MOCK_RECRUITMENT_POSTS_FULL),
+  };
+  const usedMock =
+    !api.latestCommunityPosts?.length ||
+    !api.latestProjects?.length ||
+    !api.popularProjects?.length ||
+    !api.topFeedbackProjects?.length ||
+    !api.latestRecruitmentPosts?.length;
+  return { ...merged, _isMock: usedMock };
+}
