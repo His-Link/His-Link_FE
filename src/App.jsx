@@ -2,6 +2,9 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import HomePage from "pages/HomePage";
 import CommunityPage from "pages/CommunityPage";
 import LabPage from "pages/LabPage";
+import LabProjectCreatePage from "pages/LabProjectCreatePage";
+import LabProjectEditPage from "pages/LabProjectEditPage";
+import LabProjectDetailPage from "pages/LabProjectDetailPage";
 import RecruitmentPage from "pages/RecruitmentPage";
 import LoginPage from "pages/LoginPage";
 import AuthCallbackPage from "pages/AuthCallbackPage";
@@ -16,6 +19,9 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/community" element={<CommunityPage />} />
         <Route path="/lab" element={<LabPage />} />
+        <Route path="/lab/new" element={<LabProjectCreatePage />} />
+        <Route path="/lab/:projectId/edit" element={<LabProjectEditPage />} />
+        <Route path="/lab/:projectId" element={<LabProjectDetailPage />} />
         <Route path="/recruitment" element={<RecruitmentPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
