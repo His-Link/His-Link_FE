@@ -7,19 +7,13 @@ export function getGoogleLoginUrl() {
 }
 
 export async function fetchCurrentUser() {
-  const response = await httpClient.get("/auth/me");
-  return response.data;
+  return httpClient.get("/auth/me");
 }
 
 export async function refreshAccessToken(refreshToken) {
-  const response = await httpClient.post("/auth/refresh", null, {
-    params: { refreshToken },
-  });
-  return response.data;
+  return httpClient.post("/auth/refresh", undefined, { refreshToken });
 }
 
 export async function logout(refreshToken) {
-  await httpClient.post("/auth/logout", null, {
-    params: { refreshToken },
-  });
+  await httpClient.post("/auth/logout", undefined, { refreshToken });
 }
