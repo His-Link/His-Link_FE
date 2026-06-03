@@ -27,6 +27,7 @@ function RecruitmentPage() {
     setError(null);
     try {
       const result = await fetchRecruitmentPosts({
+        activityType: activityType || undefined,
         role: role || undefined,
         status: status || undefined,
         techStack: techStack || undefined,
