@@ -14,7 +14,7 @@ function LabPreviewList({ projects, showFeedback = false }) {
     <ul className="preview-list preview-list--compact">
       {projects.map((project) => (
         <li key={project.id} className="preview-list__item">
-          <Link to="/lab" className="preview-list__link">
+          <Link to={`/lab/${project.id}`} className="preview-list__link">
             <span className="preview-list__title">{project.title}</span>
             <span className="preview-list__preview">{project.summary}</span>
             <span className="preview-list__meta">

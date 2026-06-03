@@ -252,16 +252,12 @@ export function mergeDashboardWithMock(api) {
   }
   const merged = {
     latestCommunityPosts: pickList(api.latestCommunityPosts, MOCK_DASHBOARD.latestCommunityPosts),
-    latestProjects: pickList(api.latestProjects, MOCK_DASHBOARD.latestProjects),
-    popularProjects: pickList(api.popularProjects, MOCK_DASHBOARD.popularProjects),
-    topFeedbackProjects: pickList(api.topFeedbackProjects, MOCK_DASHBOARD.topFeedbackProjects),
+    latestProjects: api.latestProjects || [],
+    popularProjects: api.popularProjects || [],
+    topFeedbackProjects: api.topFeedbackProjects || [],
     latestRecruitmentPosts: pickList(api.latestRecruitmentPosts, MOCK_RECRUITMENT_POSTS_FULL),
   };
   const usedMock =
-    !api.latestCommunityPosts?.length ||
-    !api.latestProjects?.length ||
-    !api.popularProjects?.length ||
-    !api.topFeedbackProjects?.length ||
-    !api.latestRecruitmentPosts?.length;
+    !api.latestCommunityPosts?.length || !api.latestRecruitmentPosts?.length;
   return { ...merged, _isMock: usedMock };
 }

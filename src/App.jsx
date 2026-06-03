@@ -1,7 +1,13 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import HomePage from "pages/HomePage";
 import CommunityPage from "pages/CommunityPage";
+import CommunityPostCreatePage from "pages/CommunityPostCreatePage";
+import CommunityPostDetailPage from "pages/CommunityPostDetailPage";
+import CommunityPostEditPage from "pages/CommunityPostEditPage";
 import LabPage from "pages/LabPage";
+import LabProjectCreatePage from "pages/LabProjectCreatePage";
+import LabProjectEditPage from "pages/LabProjectEditPage";
+import LabProjectDetailPage from "pages/LabProjectDetailPage";
 import RecruitmentPage from "pages/RecruitmentPage";
 import LoginPage from "pages/LoginPage";
 import AuthCallbackPage from "pages/AuthCallbackPage";
@@ -15,7 +21,13 @@ function App() {
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/community" element={<CommunityPage />} />
+        <Route path="/community/new" element={<CommunityPostCreatePage />} />
+        <Route path="/community/:postId/edit" element={<CommunityPostEditPage />} />
+        <Route path="/community/:postId" element={<CommunityPostDetailPage />} />
         <Route path="/lab" element={<LabPage />} />
+        <Route path="/lab/new" element={<LabProjectCreatePage />} />
+        <Route path="/lab/:projectId/edit" element={<LabProjectEditPage />} />
+        <Route path="/lab/:projectId" element={<LabProjectDetailPage />} />
         <Route path="/recruitment" element={<RecruitmentPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
