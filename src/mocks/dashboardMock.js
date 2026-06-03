@@ -255,9 +255,8 @@ export function mergeDashboardWithMock(api) {
     latestProjects: api.latestProjects || [],
     popularProjects: api.popularProjects || [],
     topFeedbackProjects: api.topFeedbackProjects || [],
-    latestRecruitmentPosts: pickList(api.latestRecruitmentPosts, MOCK_RECRUITMENT_POSTS_FULL),
+    latestRecruitmentPosts: api.latestRecruitmentPosts || [],
   };
-  const usedMock =
-    !api.latestCommunityPosts?.length || !api.latestRecruitmentPosts?.length;
+  const usedMock = !api.latestCommunityPosts?.length;
   return { ...merged, _isMock: usedMock };
 }

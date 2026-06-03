@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { RECRUITMENT_ACTIVITY_LABEL } from "constants/recruitmentActivityType";
 import { RECRUITMENT_ROLE_LABEL } from "constants/recruitmentRole";
 import "styles/RecruitmentCard.css";
 
@@ -30,28 +31,44 @@ function RecruitmentCard({ post, accentIndex = 0 }) {
   const progress = Math.min(100, Math.round((current / limit) * 100));
   const dday = daysUntilDeadline(post.deadline);
   const roleLabel = RECRUITMENT_ROLE_LABEL[post.recruitmentRole] || post.recruitmentRole;
+  const activityLabel =
+    RECRUITMENT_ACTIVITY_LABEL[post.activityType] || post.activityType;
+  const thumb = post.thumbnailUrl;
 
   return (
     <article className="recruitment-card">
       <div className="recruitment-card__top">
-        <span
-          className="recruitment-card__icon"
-          style={{ background: `linear-gradient(135deg, ${accent}, ${accent}cc)` }}
-          aria-hidden="true"
-        >
-          {initials(post.author?.name)}
-        </span>
+        {thumb ? (
+          <img
+            src={thumb}
+            alt=""
+            className="recruitment-card__thumb"
+          />
+        ) : (
+          <span
+            className="recruitment-card__icon"
+            style={{ background: `linear-gradient(135deg, ${accent}, ${accent}cc)` }}
+            aria-hidden="true"
+          >
+            {initials(post.author?.name)}
+          </span>
+        )}
         <span className="recruitment-card__dday">{dday}</span>
       </div>
-      <Link to="/recruitment" className="recruitment-card__link">
-        <span className="recruitment-card__role">{roleLabel}</span>
+      <Link to={`/recruitment/${post.id}`} className="recruitment-card__link">
+        <div className="recruitment-card__badges">
+          {activityLabel && (
+            <span className="recruitment-card__activity">{activityLabel}</span>
+          )}
+          <span className="recruitment-card__role">{roleLabel}</span>
+        </div>
         <h3 className="recruitment-card__title">{post.title}</h3>
         <p className="recruitment-card__desc">
-          {post.description || post.summary || "모집 상세는 팀 모집 페이지에서 확인하세요."}
+          {post.description || post.descriptionPreview || "상세 내용을 확인해 보세요."}
         </p>
         <div className="recruitment-card__progress-block">
           <div className="recruitment-card__progress-label">
-            <span>프로젝트 진행률</span>
+            <span>모집 진행률</span>
             <span>
               {current} / {limit}명
             </span>

@@ -1,7 +1,15 @@
-import { getAccessToken } from "utils/token";
+import { refreshAccessTokenRaw } from "services/tokenRefresh";
+import { emitSessionExpired } from "utils/authEvents";
+import { HttpError } from "utils/httpError";
+import { showToast } from "utils/toast";
+import { getAccessToken, clearTokens } from "utils/token";
 import { buildQueryParams, unwrapApiResponse } from "utils/api";
 
 const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:8080/api";
+
+function isAuthRefreshPath(path) {
+  return path === "/auth/refresh" || path === "/auth/logout";
+}
 
 async function parseJson(response) {
   const text = await response.text();
@@ -15,7 +23,15 @@ async function parseJson(response) {
   }
 }
 
-async function request(path, options = {}) {
+function resolveErrorMessage(payload, fallback) {
+  return (
+    payload?.message ||
+    (typeof payload === "string" ? payload : null) ||
+    fallback
+  );
+}
+
+async function request(path, options = {}, isRetry = false) {
   const {
     params,
     body,
@@ -51,11 +67,25 @@ async function request(path, options = {}) {
   const payload = await parseJson(response);
 
   if (!response.ok) {
-    const message =
-      payload?.message ||
-      (typeof payload === "string" ? payload : null) ||
-      "API request failed";
-    throw new Error(message);
+    const message = resolveErrorMessage(payload, "API request failed");
+
+    if (response.status === 401 && !isRetry && !isAuthRefreshPath(path)) {
+      try {
+        await refreshAccessTokenRaw();
+        return request(path, options, true);
+      } catch {
+        clearTokens();
+        showToast("로그인이 만료되었습니다. 다시 로그인해 주세요.", { variant: "error" });
+        emitSessionExpired();
+        throw new HttpError("로그인이 만료되었습니다. 다시 로그인해 주세요.", 401);
+      }
+    }
+
+    if (response.status === 403) {
+      showToast(message || "권한이 없습니다.", { variant: "error" });
+    }
+
+    throw new HttpError(message, response.status);
   }
 
   return unwrapApiResponse(payload);
