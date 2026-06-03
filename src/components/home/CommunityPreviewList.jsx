@@ -16,7 +16,7 @@ function CommunityPreviewList({ posts }) {
     <ul className="preview-list">
       {posts.map((post) => (
         <li key={post.id} className="preview-list__item">
-          <Link to="/community" className="preview-list__link">
+          <Link to={`/community/${post.id}`} className="preview-list__link">
             <span className="preview-list__badge">
               {POST_CATEGORY_LABEL[post.category] || post.category}
             </span>

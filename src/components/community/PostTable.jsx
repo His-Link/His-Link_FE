@@ -1,13 +1,26 @@
-import React from 'react';
-import 'styles/CommunityPage.css';
+import { Link } from "react-router-dom";
+import { POST_CATEGORY_LABEL } from "constants/postCategory";
+import { formatDate, initials } from "utils/format";
+import "styles/CommunityPage.css";
 
-function PostTable() {
-  const posts = [
-    { id: 105, category: '자유', title: '기숙사 생활 꿀팁 (5)', author: '학생A', date: '24.06.01', views: 230, likes: 42 },
-    { id: 104, category: '질문', title: 'Spring Security Custom Filter 문제 (2)', author: '개발자B', date: '24.06.01', views: 150, likes: 20 },
-    { id: 103, category: '정보 공유', title: '최신 AI 개발 툴 소개 (1)', author: '연구원C', date: '24.05.31', views: 190, likes: 35 },
-    { id: 102, category: '오류 해결 경험', title: 'HikariCP connection timeout 해결법', author: '서버관리자D', date: '24.05.31', views: 110, likes: 15 },
-  ];
+function PostTable({ posts, loading, error, page, totalPages, onPageChange }) {
+  if (loading) {
+    return (
+      <div className="post-table-container">
+        <p className="community-muted">불러오는 중...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="post-table-container">
+        <p className="community-form-error" role="alert">
+          {error}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="post-table-container">
@@ -24,31 +37,67 @@ function PostTable() {
           </tr>
         </thead>
         <tbody>
-          {posts.map((post) => (
-            <tr key={post.id}>
-              <td className="col-id">{post.id}</td>
-              <td className="col-category">{post.category}</td>
-              <td className="col-title">{post.title}</td>
-              <td className="col-author">
-                <div className="author-info">
-                  <div className="avatar-placeholder"></div>
-                  {post.author}
-                </div>
+          {posts?.length ? (
+            posts.map((post) => (
+              <tr key={post.id}>
+                <td className="col-id">{post.id}</td>
+                <td className="col-category">
+                  {POST_CATEGORY_LABEL[post.category] || post.category}
+                </td>
+                <td className="col-title">
+                  <Link to={`/community/${post.id}`} className="post-table__title-link">
+                    {post.title}
+                    {post.commentCount > 0 && (
+                      <span className="post-table__comment-count"> ({post.commentCount})</span>
+                    )}
+                  </Link>
+                </td>
+                <td className="col-author">
+                  <div className="author-info">
+                    <span className="avatar-placeholder" aria-hidden="true">
+                      {initials(post.author?.name)}
+                    </span>
+                    {post.author?.name}
+                  </div>
+                </td>
+                <td className="col-date">{formatDate(post.createdAt)}</td>
+                <td className="col-views">{post.viewCount}</td>
+                <td className="col-likes">{post.likeCount}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={7} className="post-table__empty">
+                등록된 게시글이 없습니다. 첫 글을 작성해 보세요.
               </td>
-              <td className="col-date">{post.date}</td>
-              <td className="col-views">{post.views}</td>
-              <td className="col-likes">{post.likes}</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
-      <div className="pagination">
-        <span className="page-item active">[cite: 1]</span>
-        <span className="page-item">[cite: 2]</span>
-        <span className="page-item">[cite: 3]</span>
-        <span className="page-ellipsis">...</span>
-        <span className="page-next">[Next]</span>
-      </div>
+
+      {totalPages > 1 && (
+        <nav className="pagination" aria-label="페이지">
+          <button
+            type="button"
+            className="page-nav"
+            disabled={page <= 0}
+            onClick={() => onPageChange(page - 1)}
+          >
+            이전
+          </button>
+          <span className="page-info">
+            {page + 1} / {totalPages}
+          </span>
+          <button
+            type="button"
+            className="page-nav"
+            disabled={page >= totalPages - 1}
+            onClick={() => onPageChange(page + 1)}
+          >
+            다음
+          </button>
+        </nav>
+      )}
     </div>
   );
 }
