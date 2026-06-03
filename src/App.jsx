@@ -9,6 +9,9 @@ import LabProjectCreatePage from "pages/LabProjectCreatePage";
 import LabProjectEditPage from "pages/LabProjectEditPage";
 import LabProjectDetailPage from "pages/LabProjectDetailPage";
 import RecruitmentPage from "pages/RecruitmentPage";
+import RecruitmentPostCreatePage from "pages/RecruitmentPostCreatePage";
+import RecruitmentPostDetailPage from "pages/RecruitmentPostDetailPage";
+import RecruitmentPostEditPage from "pages/RecruitmentPostEditPage";
 import LoginPage from "pages/LoginPage";
 import AuthCallbackPage from "pages/AuthCallbackPage";
 import MainLayout from "layouts/MainLayout";
@@ -29,6 +32,9 @@ function App() {
         <Route path="/lab/:projectId/edit" element={<LabProjectEditPage />} />
         <Route path="/lab/:projectId" element={<LabProjectDetailPage />} />
         <Route path="/recruitment" element={<RecruitmentPage />} />
+        <Route path="/recruitment/new" element={<RecruitmentPostCreatePage />} />
+        <Route path="/recruitment/:postId/edit" element={<RecruitmentPostEditPage />} />
+        <Route path="/recruitment/:postId" element={<RecruitmentPostDetailPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

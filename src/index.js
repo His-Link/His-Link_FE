@@ -3,6 +3,8 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import App from "./App";
+import AuthSessionListener from "components/AuthSessionListener";
+import ToastHost from "components/ToastHost";
 import { AuthInitializer } from "hooks/useAuthInit";
 import "styles/global.css";
 
@@ -13,6 +15,8 @@ root.render(
     <RecoilRoot>
       <BrowserRouter>
         <AuthInitializer>
+          <ToastHost />
+          <AuthSessionListener />
           <App />
         </AuthInitializer>
       </BrowserRouter>

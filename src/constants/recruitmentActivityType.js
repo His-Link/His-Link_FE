@@ -1,0 +1,18 @@
+export const RECRUITMENT_ACTIVITY_LABEL = {
+  PROJECT: "프로젝트",
+  HACKATHON: "해커톤",
+  CONTEST: "공모전",
+  COMPETITION: "대회",
+};
+
+export const RECRUITMENT_ACTIVITY_TYPES = [
+  { value: "", label: "전체 유형" },
+  { value: "PROJECT", label: RECRUITMENT_ACTIVITY_LABEL.PROJECT },
+  { value: "HACKATHON", label: RECRUITMENT_ACTIVITY_LABEL.HACKATHON },
+  { value: "CONTEST", label: RECRUITMENT_ACTIVITY_LABEL.CONTEST },
+  { value: "COMPETITION", label: RECRUITMENT_ACTIVITY_LABEL.COMPETITION },
+];
+
+export const RECRUITMENT_ACTIVITY_FORM_OPTIONS = RECRUITMENT_ACTIVITY_TYPES.filter(
+  (item) => item.value
+);

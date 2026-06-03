@@ -1,4 +1,5 @@
 import { httpClient } from "services/httpClient";
+import { refreshAccessTokenRaw } from "services/tokenRefresh";
 
 const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
 
@@ -10,8 +11,9 @@ export async function fetchCurrentUser() {
   return httpClient.get("/auth/me");
 }
 
-export async function refreshAccessToken(refreshToken) {
-  return httpClient.post("/auth/refresh", undefined, { refreshToken });
+/** httpClient 401 재시도와 동일한 갱신 로직 (수동 호출용) */
+export async function refreshAccessToken() {
+  return refreshAccessTokenRaw();
 }
 
 export async function logout(refreshToken) {
