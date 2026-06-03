@@ -26,6 +26,9 @@ function LabProjectCard({ project, accentIndex = 0, sortMode = "LATEST" }) {
           </span>
         )}
         <div className="lab-card__badges">
+          {sortMode === "POPULAR" && (
+            <span className="lab-card__badge">♥ {project.likeCount ?? 0}</span>
+          )}
           {sortMode === "FEEDBACK" && (
             <span className="lab-card__badge">피드백 {project.feedbackCount}</span>
           )}
@@ -42,6 +45,12 @@ function LabProjectCard({ project, accentIndex = 0, sortMode = "LATEST" }) {
         <div className="lab-card__meta">
           <span>{project.author?.name}</span>
           <span aria-hidden="true">·</span>
+          {project.likeCount != null && (
+            <>
+              <span>♥ {project.likeCount}</span>
+              <span aria-hidden="true">·</span>
+            </>
+          )}
           <span>조회 {project.viewCount}</span>
           <span aria-hidden="true">·</span>
           <span>{formatDate(project.createdAt)}</span>

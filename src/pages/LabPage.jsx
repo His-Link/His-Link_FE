@@ -89,7 +89,7 @@ function LabPage() {
             type="search"
             value={draftKeyword}
             onChange={(e) => setDraftKeyword(e.target.value)}
-            placeholder="제목·요약 검색"
+            placeholder="제목·요약·테스트 요청 검색"
             className="lab-search__input"
           />
           <button type="submit" className="lab-btn lab-btn--secondary">

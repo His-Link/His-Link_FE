@@ -25,6 +25,10 @@ export async function deleteProject(projectId) {
   return httpClient.delete(`/lab/projects/${projectId}`);
 }
 
+export async function toggleProjectLike(projectId) {
+  return httpClient.post(`/lab/projects/${projectId}/like`);
+}
+
 export async function fetchFeedbacks(projectId) {
   return httpClient.get(`/lab/projects/${projectId}/feedbacks`);
 }

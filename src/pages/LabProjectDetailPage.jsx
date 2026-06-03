@@ -2,7 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import FeedbackForm from "components/lab/FeedbackForm";
 import FeedbackList from "components/lab/FeedbackList";
+import FeedbackSummary from "components/lab/FeedbackSummary";
 import ImageCarousel from "components/lab/ImageCarousel";
+import LabUtGuide from "components/lab/LabUtGuide";
 import { useAuthValue } from "hooks/useAuth";
 import {
   createFeedback,
@@ -10,6 +12,7 @@ import {
   deleteProject,
   fetchFeedbacks,
   fetchProject,
+  toggleProjectLike,
   updateFeedback
 } from "services/labService";
 import { formatDate, formatScore } from "utils/format";
@@ -27,6 +30,7 @@ function LabProjectDetailPage() {
   const [error, setError] = useState(null);
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [editingFeedback, setEditingFeedback] = useState(null);
+  const [likeBusy, setLikeBusy] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -80,6 +84,31 @@ function LabProjectDetailPage() {
     navigate("/lab", { replace: true });
   };
 
+  const handleToggleLike = async () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    if (likeBusy) return;
+    setLikeBusy(true);
+    try {
+      const result = await toggleProjectLike(projectId);
+      setProject((prev) =>
+        prev
+          ? {
+              ...prev,
+              likeCount: result.likeCount,
+              likedByMe: result.liked
+            }
+          : prev
+      );
+    } catch (err) {
+      window.alert(err.message || "좋아요 처리에 실패했습니다.");
+    } finally {
+      setLikeBusy(false);
+    }
+  };
+
   if (loading) {
     return <p className="lab-muted">불러오는 중...</p>;
   }
@@ -110,7 +139,20 @@ function LabProjectDetailPage() {
           ) : null}
 
           <header className="lab-detail__header">
-            <h1>{project.title}</h1>
+            <div className="lab-detail__title-row">
+              <h1>{project.title}</h1>
+              <button
+                type="button"
+                className={`lab-like-btn${project.likedByMe ? " lab-like-btn--on" : ""}`}
+                onClick={handleToggleLike}
+                disabled={likeBusy}
+                aria-pressed={Boolean(project.likedByMe)}
+                title={isAuthenticated ? undefined : "로그인 후 좋아요할 수 있습니다"}
+              >
+                <span aria-hidden="true">{project.likedByMe ? "♥" : "♡"}</span>
+                <span>{project.likeCount ?? 0}</span>
+              </button>
+            </div>
             <p className="lab-detail__summary">{project.summary}</p>
             <p className="lab-detail__author">
               {project.author?.name} · {formatDate(project.createdAt)}
@@ -125,7 +167,61 @@ function LabProjectDetailPage() {
             </ul>
           )}
 
+          <LabUtGuide project={project} />
+
+          {(project.serviceUrl || project.githubUrl) && (
+            <div className="lab-detail__service-cta">
+              <p className="lab-detail__service-cta-label">
+                {project.serviceUrl ? "테스트할 서비스" : "프로젝트 링크"}
+              </p>
+              <div className="lab-detail__service-actions">
+                {project.serviceUrl && (
+                  <a
+                    href={project.serviceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="lab-btn lab-btn--primary lab-detail__service-link"
+                  >
+                    서비스 열기 ↗
+                  </a>
+                )}
+                {project.githubUrl && (
+                  <a
+                    href={project.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="lab-btn lab-btn--secondary lab-detail__github-link"
+                  >
+                    GitHub ↗
+                  </a>
+                )}
+              </div>
+              <p className="lab-detail__service-hint">
+                {project.serviceUrl
+                  ? "새 탭에서 열립니다. 테스트 후 아래 피드백을 작성해 주세요."
+                  : "배포 URL이 없습니다. GitHub에서 프로젝트를 확인해 주세요."}
+              </p>
+            </div>
+          )}
+
+          <section
+            className={`lab-detail__section lab-detail__section--test-request${
+              project.testRequest ? "" : " lab-detail__section--empty"
+            }`}
+          >
+            <h2>테스트 요청 사항</h2>
+            {project.testRequest ? (
+              <p>{project.testRequest}</p>
+            ) : (
+              <p className="lab-muted">등록된 테스트 요청이 없습니다.</p>
+            )}
+          </section>
+
           <dl className="lab-detail__stats">
+            <div>
+              <dt>좋아요</dt>
+              <dd>{project.likeCount ?? 0}</dd>
+            </div>
             <div>
               <dt>조회</dt>
               <dd>{project.viewCount}</dd>
@@ -148,36 +244,6 @@ function LabProjectDetailPage() {
             </div>
           </dl>
 
-          {project.testRequest && (
-            <section className="lab-detail__section">
-              <h2>테스트 요청</h2>
-              <p>{project.testRequest}</p>
-            </section>
-          )}
-
-          <div className="lab-detail__links">
-            {project.serviceUrl && (
-              <a
-                href={project.serviceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="lab-btn lab-btn--secondary"
-              >
-                서비스 열기
-              </a>
-            )}
-            {project.githubUrl && (
-              <a
-                href={project.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="lab-btn lab-btn--ghost"
-              >
-                GitHub
-              </a>
-            )}
-          </div>
-
           {isOwner && (
             <div className="lab-detail__owner-actions">
               <Link to={`/lab/${projectId}/edit`} className="lab-btn lab-btn--secondary">
@@ -195,6 +261,8 @@ function LabProjectDetailPage() {
         </article>
 
         <aside className="lab-detail__aside">
+          <FeedbackSummary project={project} feedbacks={feedbacks} />
+
           <section className="lab-detail__feedback-panel">
             <div className="lab-detail__feedback-head">
               <h2>피드백 ({feedbacks.length})</h2>

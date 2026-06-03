@@ -22,8 +22,19 @@ function toFormState(feedback) {
   };
 }
 
+function validateForm(form) {
+  const fieldErrors = {};
+  if (!form.uiUxScore) fieldErrors.uiUxScore = "UI/UX 점수를 선택해 주세요.";
+  if (!form.functionalityScore) fieldErrors.functionalityScore = "기능성 점수를 선택해 주세요.";
+  if (!form.overallSatisfaction) {
+    fieldErrors.overallSatisfaction = "전반적 만족도를 선택해 주세요.";
+  }
+  return fieldErrors;
+}
+
 function FeedbackForm({ initial, submitLabel, onSubmit, onCancel }) {
   const [form, setForm] = useState(() => toFormState(initial));
+  const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -31,8 +42,10 @@ function FeedbackForm({ initial, submitLabel, onSubmit, onCancel }) {
     event.preventDefault();
     setError(null);
 
-    if (!form.uiUxScore || !form.functionalityScore || !form.overallSatisfaction) {
-      setError("UI/UX, 기능성, 전반 만족도 점수를 모두 선택해 주세요.");
+    const errors = validateForm(form);
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      setError("필수 항목을 확인해 주세요.");
       return;
     }
 
@@ -53,65 +66,98 @@ function FeedbackForm({ initial, submitLabel, onSubmit, onCancel }) {
     }
   };
 
+  const clearFieldError = (field) => {
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
   return (
-    <form className="lab-feedback-form" onSubmit={handleSubmit}>
+    <form className="lab-feedback-form" onSubmit={handleSubmit} noValidate>
       <h3 className="lab-feedback-form__title">
         {initial ? "피드백 수정" : "테스트 피드백 작성"}
       </h3>
-      <p className="lab-feedback-form__hint">
-        UI/UX·기능·만족도를 1~5점으로 평가하고, 버그·의견·개선안을 남겨 주세요.
-      </p>
 
-      <ScoreField
-        label="UI/UX"
-        name="uiUxScore"
-        value={form.uiUxScore}
-        onChange={(v) => setForm((prev) => ({ ...prev, uiUxScore: v }))}
-      />
-      <ScoreField
-        label="기능성"
-        name="functionalityScore"
-        value={form.functionalityScore}
-        onChange={(v) => setForm((prev) => ({ ...prev, functionalityScore: v }))}
-      />
-      <ScoreField
-        label="전반적 만족도"
-        name="overallSatisfaction"
-        value={form.overallSatisfaction}
-        onChange={(v) => setForm((prev) => ({ ...prev, overallSatisfaction: v }))}
-      />
+      <section className="lab-form-section lab-form-section--scores" aria-labelledby="lab-scores-heading">
+        <h4 id="lab-scores-heading" className="lab-form-section__title">
+          정량 평가
+        </h4>
+        <p className="lab-form-section__hint">각 항목을 1~5점(별점)으로 평가해 주세요.</p>
 
-      <label className="lab-field">
-        <span>버그 리포트</span>
-        <textarea
-          rows={3}
-          value={form.bugReport}
-          onChange={(e) => setForm((prev) => ({ ...prev, bugReport: e.target.value }))}
-          placeholder="재현 방법, 기기/브라우저 등"
+        <ScoreField
+          label="UI/UX"
+          name="uiUxScore"
+          value={form.uiUxScore}
+          onChange={(v) => {
+            setForm((prev) => ({ ...prev, uiUxScore: v }));
+            clearFieldError("uiUxScore");
+          }}
+          error={fieldErrors.uiUxScore}
         />
-      </label>
-
-      <label className="lab-field">
-        <span>전반 의견</span>
-        <textarea
-          rows={3}
-          value={form.opinion}
-          onChange={(e) => setForm((prev) => ({ ...prev, opinion: e.target.value }))}
-          placeholder="사용해 본 소감"
+        <ScoreField
+          label="기능성"
+          name="functionalityScore"
+          value={form.functionalityScore}
+          onChange={(v) => {
+            setForm((prev) => ({ ...prev, functionalityScore: v }));
+            clearFieldError("functionalityScore");
+          }}
+          error={fieldErrors.functionalityScore}
         />
-      </label>
-
-      <label className="lab-field">
-        <span>개선 제안</span>
-        <textarea
-          rows={3}
-          value={form.improvementSuggestion}
-          onChange={(e) =>
-            setForm((prev) => ({ ...prev, improvementSuggestion: e.target.value }))
-          }
-          placeholder="개선하면 좋을 점"
+        <ScoreField
+          label="전반적 만족도"
+          name="overallSatisfaction"
+          value={form.overallSatisfaction}
+          onChange={(v) => {
+            setForm((prev) => ({ ...prev, overallSatisfaction: v }));
+            clearFieldError("overallSatisfaction");
+          }}
+          error={fieldErrors.overallSatisfaction}
         />
-      </label>
+      </section>
+
+      <section className="lab-form-section lab-form-section--text" aria-labelledby="lab-text-heading">
+        <h4 id="lab-text-heading" className="lab-form-section__title">
+          정성 피드백
+        </h4>
+        <p className="lab-form-section__hint">버그·의견·개선안은 선택 사항입니다.</p>
+
+        <label className="lab-field">
+          <span>버그 리포트</span>
+          <textarea
+            rows={3}
+            value={form.bugReport}
+            onChange={(e) => setForm((prev) => ({ ...prev, bugReport: e.target.value }))}
+            placeholder="재현 단계 (1, 2, 3…), 기기·브라우저, 기대 결과 / 실제 결과"
+          />
+        </label>
+
+        <label className="lab-field">
+          <span>전반 의견</span>
+          <textarea
+            rows={3}
+            value={form.opinion}
+            onChange={(e) => setForm((prev) => ({ ...prev, opinion: e.target.value }))}
+            placeholder="사용해 본 소감을 자유롭게 적어 주세요."
+          />
+        </label>
+
+        <label className="lab-field">
+          <span>개선 제안</span>
+          <textarea
+            rows={3}
+            value={form.improvementSuggestion}
+            onChange={(e) =>
+              setForm((prev) => ({ ...prev, improvementSuggestion: e.target.value }))
+            }
+            placeholder="개선하면 좋을 점을 구체적으로 적어 주세요."
+          />
+        </label>
+      </section>
 
       {error && (
         <p className="lab-form-error" role="alert">

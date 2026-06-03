@@ -3,6 +3,44 @@ import { fetchTechStacks } from "services/techStackService";
 
 const MAX_IMAGES = 10;
 
+function isValidHttpUrl(value) {
+  if (!value?.trim()) return true;
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function validateProjectForm(form) {
+  const fieldErrors = {};
+  const title = form.title.trim();
+  const summary = form.summary.trim();
+
+  if (!title) {
+    fieldErrors.title = "제목을 입력해 주세요.";
+  } else if (title.length > 200) {
+    fieldErrors.title = "제목은 200자 이하여야 합니다.";
+  }
+
+  if (!summary) {
+    fieldErrors.summary = "한 줄 소개를 입력해 주세요.";
+  } else if (summary.length > 500) {
+    fieldErrors.summary = "한 줄 소개는 500자 이하여야 합니다.";
+  }
+
+  if (form.serviceUrl.trim() && !isValidHttpUrl(form.serviceUrl)) {
+    fieldErrors.serviceUrl = "http:// 또는 https:// 로 시작하는 URL을 입력해 주세요.";
+  }
+
+  if (form.githubUrl.trim() && !isValidHttpUrl(form.githubUrl)) {
+    fieldErrors.githubUrl = "http:// 또는 https:// 로 시작하는 URL을 입력해 주세요.";
+  }
+
+  return fieldErrors;
+}
+
 function LabProjectForm({
   submitLabel,
   initialProject = null,
@@ -22,6 +60,7 @@ function LabProjectForm({
   const [deleteImageIds, setDeleteImageIds] = useState([]);
   const [newFiles, setNewFiles] = useState([]);
   const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -80,6 +119,13 @@ function LabProjectForm({
 
   const handleChange = (field) => (event) => {
     setForm((prev) => ({ ...prev, [field]: event.target.value }));
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
   };
 
   const handleFileChange = (event) => {
@@ -111,6 +157,14 @@ function LabProjectForm({
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError(null);
+
+    const errors = validateProjectForm(form);
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      setError("입력 내용을 확인해 주세요.");
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -134,48 +188,98 @@ function LabProjectForm({
   };
 
   return (
-    <form className="lab-project-form" onSubmit={handleSubmit}>
-      <label className="lab-field">
-        <span>
-          제목 <span className="lab-score-field__req">*</span>
-        </span>
-        <input
-          type="text"
-          value={form.title}
-          onChange={handleChange("title")}
-          maxLength={200}
-          required
-        />
-      </label>
+    <form className="lab-project-form" onSubmit={handleSubmit} noValidate>
+      <section className="lab-form-section" aria-labelledby="lab-project-basic">
+        <h3 id="lab-project-basic" className="lab-form-section__title">
+          기본 정보
+        </h3>
 
-      <label className="lab-field">
-        <span>
-          한 줄 소개 <span className="lab-score-field__req">*</span>
-        </span>
-        <textarea
-          rows={2}
-          value={form.summary}
-          onChange={handleChange("summary")}
-          maxLength={500}
-          required
-        />
-      </label>
+        <label className={`lab-field${fieldErrors.title ? " lab-field--error" : ""}`}>
+          <span>
+            제목 <span className="lab-score-field__req">*</span>
+          </span>
+          <input
+            type="text"
+            value={form.title}
+            onChange={handleChange("title")}
+            maxLength={200}
+            aria-invalid={Boolean(fieldErrors.title)}
+          />
+          {fieldErrors.title && <p className="lab-field-error">{fieldErrors.title}</p>}
+        </label>
 
-      <label className="lab-field">
-        <span>배포 URL</span>
-        <input type="url" value={form.serviceUrl} onChange={handleChange("serviceUrl")} />
-      </label>
+        <label className={`lab-field${fieldErrors.summary ? " lab-field--error" : ""}`}>
+          <span>
+            한 줄 소개 <span className="lab-score-field__req">*</span>
+          </span>
+          <textarea
+            rows={2}
+            value={form.summary}
+            onChange={handleChange("summary")}
+            maxLength={500}
+            aria-invalid={Boolean(fieldErrors.summary)}
+          />
+          {fieldErrors.summary && <p className="lab-field-error">{fieldErrors.summary}</p>}
+        </label>
+      </section>
 
-      <label className="lab-field">
-        <span>GitHub URL</span>
-        <input type="url" value={form.githubUrl} onChange={handleChange("githubUrl")} />
-      </label>
+      <section className="lab-form-section" aria-labelledby="lab-project-links">
+        <h3 id="lab-project-links" className="lab-form-section__title">
+          링크
+        </h3>
+        <p className="lab-form-section__hint">
+          배포 URL을 넣으면 테스터가 상세에서 바로 서비스를 열 수 있습니다.
+        </p>
 
-      <label className="lab-field">
-        <span>테스트 요청 사항</span>
-        <textarea rows={4} value={form.testRequest} onChange={handleChange("testRequest")} />
-      </label>
+        <label className={`lab-field${fieldErrors.serviceUrl ? " lab-field--error" : ""}`}>
+          <span>배포 URL</span>
+          <input
+            type="url"
+            value={form.serviceUrl}
+            onChange={handleChange("serviceUrl")}
+            placeholder="https://example.com"
+            aria-invalid={Boolean(fieldErrors.serviceUrl)}
+          />
+          {fieldErrors.serviceUrl && (
+            <p className="lab-field-error">{fieldErrors.serviceUrl}</p>
+          )}
+        </label>
 
+        <label className={`lab-field${fieldErrors.githubUrl ? " lab-field--error" : ""}`}>
+          <span>GitHub URL</span>
+          <input
+            type="url"
+            value={form.githubUrl}
+            onChange={handleChange("githubUrl")}
+            placeholder="https://github.com/..."
+            aria-invalid={Boolean(fieldErrors.githubUrl)}
+          />
+          {fieldErrors.githubUrl && <p className="lab-field-error">{fieldErrors.githubUrl}</p>}
+        </label>
+      </section>
+
+      <section className="lab-form-section lab-form-section--highlight" aria-labelledby="lab-project-test">
+        <h3 id="lab-project-test" className="lab-form-section__title">
+          테스트 요청 사항
+        </h3>
+        <p className="lab-form-section__hint">
+          테스터가 확인할 시나리오·화면·주의사항을 적어 주세요. (검색에도 포함됩니다)
+        </p>
+        <label className="lab-field">
+          <span className="lab-visually-hidden">테스트 요청 사항</span>
+          <textarea
+            rows={5}
+            value={form.testRequest}
+            onChange={handleChange("testRequest")}
+            placeholder="예) 회원가입 → 로그인 → 메인 대시보드까지 진행해 주세요. 모바일 Safari에서도 확인 부탁드립니다."
+          />
+        </label>
+      </section>
+
+      <section className="lab-form-section" aria-labelledby="lab-project-images">
+        <h3 id="lab-project-images" className="lab-form-section__title">
+          스크린샷
+        </h3>
       <div className="lab-field">
         <span>프로젝트 이미지 (최대 {MAX_IMAGES}장)</span>
         <p className="lab-image-hint">JPEG, PNG, WEBP, GIF · 파일당 5MB 이하</p>
@@ -232,9 +336,15 @@ function LabProjectForm({
         </div>
       )}
 
+      </section>
+
       {techStacks.length > 0 && (
+        <section className="lab-form-section" aria-labelledby="lab-project-stacks">
+          <h3 id="lab-project-stacks" className="lab-form-section__title">
+            기술 스택
+          </h3>
         <fieldset className="lab-fieldset">
-          <legend>기술 스택</legend>
+          <legend className="lab-visually-hidden">기술 스택</legend>
           <div className="lab-chip-group">
             {techStacks.map((stack) => (
               <label key={stack.id} className="lab-chip">
@@ -248,6 +358,7 @@ function LabProjectForm({
             ))}
           </div>
         </fieldset>
+        </section>
       )}
 
       {error && (
