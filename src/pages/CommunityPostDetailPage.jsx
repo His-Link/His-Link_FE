@@ -13,6 +13,7 @@ import {
   togglePostLike,
   updateComment,
 } from "services/communityService";
+import { shouldIncrementCommunityView } from "utils/communityViewDedupe";
 import { formatDate } from "utils/format";
 import "styles/CommunityPage.css";
 
@@ -28,12 +29,12 @@ function CommunityPostDetailPage() {
   const [likeBusy, setLikeBusy] = useState(false);
   const [showCommentForm, setShowCommentForm] = useState(false);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ countView = false } = {}) => {
     setLoading(true);
     setError(null);
     try {
       const [postData, commentData] = await Promise.all([
-        fetchPost(postId),
+        fetchPost(postId, { countView }),
         fetchComments(postId),
       ]);
       setPost(postData);
@@ -46,8 +47,9 @@ function CommunityPostDetailPage() {
   }, [postId]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    const countView = shouldIncrementCommunityView(postId);
+    load({ countView });
+  }, [postId, load]);
 
   const isOwner = post && user && post.author?.id === user.id;
 

@@ -15,6 +15,7 @@ import {
   toggleProjectLike,
   updateFeedback
 } from "services/labService";
+import { shouldIncrementLabView } from "utils/labViewDedupe";
 import { formatDate, formatScore } from "utils/format";
 import "styles/LabPage.css";
 import "styles/LabProjectDetail.css";
@@ -32,12 +33,12 @@ function LabProjectDetailPage() {
   const [editingFeedback, setEditingFeedback] = useState(null);
   const [likeBusy, setLikeBusy] = useState(false);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async ({ countView = false } = {}) => {
     setLoading(true);
     setError(null);
     try {
       const [projectData, feedbackData] = await Promise.all([
-        fetchProject(projectId),
+        fetchProject(projectId, { countView }),
         fetchFeedbacks(projectId)
       ]);
       setProject(projectData);
@@ -50,8 +51,9 @@ function LabProjectDetailPage() {
   }, [projectId]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    const countView = shouldIncrementLabView(projectId);
+    load({ countView });
+  }, [projectId, load]);
 
   const myFeedback = useMemo(
     () => feedbacks.find((item) => item.author?.id === user?.id),

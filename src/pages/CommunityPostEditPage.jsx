@@ -19,7 +19,7 @@ function CommunityPostEditForm() {
 
     async function load() {
       try {
-        const data = await fetchPost(postId);
+        const data = await fetchPost(postId, { countView: false });
         if (!cancelled) {
           if (user && data.author?.id !== user.id) {
             setError("게시글을 수정할 권한이 없습니다.");

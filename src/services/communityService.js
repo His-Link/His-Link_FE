@@ -9,8 +9,8 @@ export async function fetchPopularPosts(size = 5) {
   return httpClient.get("/community/posts", { page: 0, size, sort: "likeCount,desc" });
 }
 
-export async function fetchPost(postId) {
-  return httpClient.get(`/community/posts/${postId}`);
+export async function fetchPost(postId, { countView = true } = {}) {
+  return httpClient.get(`/community/posts/${postId}`, { countView });
 }
 
 export async function createPost({ category, title, content }) {

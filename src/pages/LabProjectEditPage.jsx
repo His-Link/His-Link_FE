@@ -19,7 +19,7 @@ function LabProjectEditForm() {
 
     async function load() {
       try {
-        const data = await fetchProject(projectId);
+        const data = await fetchProject(projectId, { countView: false });
         if (!cancelled) {
           if (user && data.author?.id !== user.id && user.role !== "ADMIN") {
             setError("프로젝트를 수정할 권한이 없습니다.");

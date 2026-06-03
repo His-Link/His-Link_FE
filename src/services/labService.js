@@ -5,8 +5,8 @@ export async function fetchProjects({ sort = "LATEST", keyword, techStack, page 
   return httpClient.get("/lab/projects", { sort, keyword, techStack, page, size });
 }
 
-export async function fetchProject(projectId) {
-  return httpClient.get(`/lab/projects/${projectId}`);
+export async function fetchProject(projectId, { countView = true } = {}) {
+  return httpClient.get(`/lab/projects/${projectId}`, { countView });
 }
 
 export async function createProject({ fields, techStackIds, newFiles }) {
